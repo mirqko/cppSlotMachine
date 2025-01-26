@@ -2,7 +2,14 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <limits>
+#include <conio.h>
+#include <ctime>
+
 using namespace std;
+
+const int ESCAPE=27;
+const int RETURN=13;
 
 unordered_map<int, std::string> fruitsEmojis = {
     {0, "\U0001F352"}, // Cherries
@@ -37,37 +44,36 @@ int spinReel(vector<int> reel, vector<int> &reel_result) {
     return 0;
 }
 
-void checkWin(vector<int> reel1, vector<int> reel2, vector<int> reel3) {
-
+int checkWin(vector<int> reel1, vector<int> reel2, vector<int> reel3, int bet) {
         int earnings = 0;
-        int bet = 1;
 
         //check horizontal combinations
         if (reel1[0] == reel2[0] && reel2[0] == reel3[0]) {
             earnings += bet * payoutMultiplyerMap[reel1[0]];
-            cout << "upper row combinatio, win: "+ to_string(bet * payoutMultiplyerMap[reel1[0]]) +"$"<< endl;
+            cout << "upper row combinatio, win: " << to_string(bet * payoutMultiplyerMap[reel1[0]]) << "$"<< endl;
         }
         if (reel1[1] == reel2[1] && reel2[1] == reel3[1]) {
-            earnings += bet * payoutMultiplyerMap[reel1[0]];
-            cout << "middle row combination, win "+ to_string(bet * payoutMultiplyerMap[reel1[0]]) +"$"<< endl;
+            earnings += bet * payoutMultiplyerMap[reel1[1]];
+            cout << "middle row combination, win " << to_string(bet * payoutMultiplyerMap[reel1[1]]) << "$"<< endl;
         }
         if (reel1[2] == reel2[2] && reel2[2] == reel3[2]) {
-            earnings += bet * payoutMultiplyerMap[reel1[0]];
-            cout << "bottom row combination, win " + to_string(bet * payoutMultiplyerMap[reel1[0]]) +"$"<< endl;
+            earnings += bet * payoutMultiplyerMap[reel1[2]];
+            cout << "bottom row combination, win " << to_string(bet * payoutMultiplyerMap[reel1[2]]) << "$"<< endl;
         }
 
         // check diagonal combinations
         if (reel1[0] == reel2[1] && reel2[1] == reel3[2]) {
             earnings += bet * payoutMultiplyerMap[reel1[0]];
-            cout << "diagonal combination, win " + to_string(bet * payoutMultiplyerMap[reel1[0]]) +"$"<< endl;
+            cout << "diagonal combination, win " << to_string(bet * payoutMultiplyerMap[reel1[0]]) << "$"<< endl;
         }
         if (reel1[2] == reel2[1] && reel2[1] == reel3[0]) {
-            earnings += bet * payoutMultiplyerMap[reel1[0]];
-            cout << "diagonal combination, win: "+ to_string(bet * payoutMultiplyerMap[reel1[0]]) +"$"<< endl;
+            earnings += bet * payoutMultiplyerMap[reel1[2]];
+            cout << "diagonal combination, win: " << to_string(bet * payoutMultiplyerMap[reel1[2]]) << "$"<< endl;
         }
         if (earnings > 0) {
-            cout << "total win: "+ to_string(earnings) +"$"<< endl;
+            cout << "total win: " << to_string(earnings) << "$"<< endl;
         }
+    return earnings;
 }
 
 
@@ -79,16 +85,36 @@ int main() {
     vector<int> reel1_result(3);
     vector<int> reel2_result(3);
     vector<int> reel3_result(3);
-    
-    spinReel(reel1, reel1_result);
-    spinReel(reel2, reel2_result);
-    spinReel(reel3, reel3_result);
+    int bet = 1;
+    int credit = 10;
 
-    cout << fruitsEmojis[reel1_result[0]]+ "  "+ fruitsEmojis[reel2_result[0]]+ "  "+ fruitsEmojis[reel3_result[0]] << endl;
-    cout << fruitsEmojis[reel1_result[1]]+ "  "+ fruitsEmojis[reel2_result[1]]+ "  "+ fruitsEmojis[reel3_result[1]] << endl;
-    cout << fruitsEmojis[reel1_result[2]]+ "  "+ fruitsEmojis[reel2_result[2]]+ "  "+ fruitsEmojis[reel3_result[2]] << endl;
+    while (credit > 0)
+    {
+        cout << endl << "credit: " << to_string(credit) << endl;
+        cout << "press ENTER to continue, press ESC to exit";
+        char key=getch();
+        if (key==ESCAPE) 
+        {
+            return 0;
+        }
+        else if (key==RETURN) {
+            
+            credit--;
+            spinReel(reel1, reel1_result);
+            spinReel(reel2, reel2_result);
+            spinReel(reel3, reel3_result);
+            
+            cout << endl << endl;
+            cout << fruitsEmojis[reel1_result[0]] << "  " << fruitsEmojis[reel2_result[0]] << "  " << fruitsEmojis[reel3_result[0]] << endl;
+            cout << fruitsEmojis[reel1_result[1]] << "  " << fruitsEmojis[reel2_result[1]] << "  " << fruitsEmojis[reel3_result[1]] << endl;
+            cout << fruitsEmojis[reel1_result[2]] << "  " << fruitsEmojis[reel2_result[2]] << "  " << fruitsEmojis[reel3_result[2]] << endl;
 
-    checkWin(reel1_result, reel2_result, reel3_result);
+            int roundEarnings = 0;
+            roundEarnings += checkWin(reel1_result, reel2_result, reel3_result, bet);
+            credit += roundEarnings;
+
+        }
+    }
     
     return 0;
 }
